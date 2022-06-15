@@ -34,7 +34,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 output application/json
 ---
 {
-	message : "Data inserted successfully"
+	message : "Data inserted successfully..."
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
