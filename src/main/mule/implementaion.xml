@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="92c368df-4d72-4283-a8d1-ae0d921f0713" >
+		<db:generic-connection url="${postgres.url}" driverClassName="org.postgresql.Driver" user="${postgres.user}" password="${postgres.password}" />
+	</db:config>
+	<flow name="University" doc:id="56180596-bef2-4eb6-9902-0e3973869b62" >
+		<db:execute-ddl doc:name="Execute DDL" doc:id="e0175d0b-5156-423d-825c-2f6a3864edf0" config-ref="Database_Config">
+			<db:sql ><![CDATA[create table university(Name_Of_Univ varchar(255),Students varchar(255),Location varchar(255),ID integer primary key,State varchar(255),Branches varchar(255),Faculty varchar(255));]]></db:sql>
+		</db:execute-ddl>
+		<set-payload value="Table created successfully..." doc:name="Set Payload" doc:id="af25cd7a-7a9e-4f52-8db5-f4db22a717f2" />
+	</flow>
+	<flow name="postUniversity" doc:id="a22b93d3-5e14-4d85-b8d5-8869e7f7947c">
+		<db:insert doc:name="Insert" doc:id="4b529739-cf5a-45d6-9fc0-4e41c1d73d0c" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO university VALUES(:Name_Of_Univ, :Students, :Location, :ID, :State, :Branches, :Faculty);]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	Name_Of_Univ : payload."Name Of Univ",
+	Students : payload.Students,
+	Location : payload.Location,
+	ID : payload.ID,
+	State : payload.State,
+	Branches : payload.Branches,
+	Faculty : payload.Faculty
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="da323df3-045e-4f56-854e-978320cff7c4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "Data inserted successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ec5d483b-f96d-485c-8a38-5c8a738de119" />
+	</flow>
+	<flow name="getAllUniversties" doc:id="a9ad3ca2-0545-427b-9d89-54b575ef078e">
+		<db:select doc:name="Select" doc:id="400588ba-2cca-4982-b3b2-531f4a4934cd" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT Name_Of_Univ, Students, Location, ID, State, Branches, Faculty FROM university;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="eca940b7-0dba-45f8-bf16-5a743cc8b691">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map({
+  Name_Of_Univ: $.Name_of_Univ,
+  Students: $.Students,
+  Location: $.Location,
+  ID: $.ID,
+  State: $.State,
+  Branches: $.Branches,
+  Faculty: $.Faculty
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="847d7ec9-5009-4849-8b89-f75420e6384b" />
+	</flow>
+	<flow name="getById" doc:id="ed795376-fd45-4e59-8d78-b49b232c7f04">
+		<db:select doc:name="Select" doc:id="3798f71b-e754-42d0-ac5b-9adec44646bd" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM university WHERE ID = :id;]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	id: attributes.uriParams.ID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="cc051d95-ae96-4433-9ccc-226714724a34" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9c193235-7136-4f57-ae6d-60e68f57da28" />
+	</flow>
+	<flow name="Update" doc:id="05607dd4-57d5-42f7-a6a8-1375f75bf336" >
+		<db:update doc:name="Update" doc:id="e87b1ef1-bcbb-4f02-868b-870b69765425" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE university SET Name_of_UNiv = :Name_Of_Univ, Students = :Students, Location = :Location, State = :State, Branches = :Branches, Faculty = :Faculty]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	Name_Of_Univ : payload."Name Of Univ",
+	Students : payload.Students,
+	Location : payload.Location,
+	ID : attributes.uriParams.ID,
+	State : payload.State,
+	Branches : payload.Branches,
+	Faculty : payload.Faculty
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="f8373d0c-2104-47d0-9606-136af878318e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "University details updated successfully.."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ce0d1ecb-e709-4e4e-af4d-477d4c60beca" />
+	</flow>
+	<flow name="deleteById" doc:id="c7e822eb-0ac1-434c-8624-2493f733d190" >
+		<db:delete doc:name="Delete" doc:id="b5cb2a33-50bf-460e-81cd-9d1b972030a7" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM university WHERE ID = :id;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: attributes.uriParams.ID
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="4ece476c-a91b-4ab9-89c0-917ffc0531b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "University Details are successfully Deleted...."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="007dcea2-d018-46c2-9a04-c250b9d8fe13" />
+	</flow>
+</mule>

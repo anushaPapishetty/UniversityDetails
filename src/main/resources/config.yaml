@@ -1,0 +1,7 @@
+postgres:
+  url: "jdbc:postgresql://castor.db.elephantsql.com/vnkijlwn"
+  user: "vnkijlwn"
+  password: "RJFGbmZT92h6aCrpTdgz3PcllRoYwb4x"
+  
+  
+  

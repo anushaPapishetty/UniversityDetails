@@ -1,0 +1,62 @@
+#%RAML 1.0
+title: University
+
+types:
+  UniversityDT: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/DataType/UniversityDataType.raml
+
+traits:
+  Error: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/Traits/errors.raml
+
+securitySchemes:
+  BasicAuth: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/SecuritySchemes/BasicAuth.raml
+
+/University:
+  is: [Error]
+  securedBy:
+    - BasicAuth
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            type: UniversityDT[]
+            example: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/Examples/UniversityAlldata.raml
+  post:
+    securedBy:
+    - BasicAuth
+    body:
+      application/json:
+        type: UniversityDT
+        example: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/Examples/Unv-Single.raml
+    responses:
+      201:
+        body:
+          application/json:
+            example: "Data was created"
+  /{ID}:
+    is: [Error]
+    securedBy:
+    - BasicAuth
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: UniversityDT
+              example: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/Examples/Unv-Single.raml
+    put:
+      body:
+        application/json:
+          type: UniversityDT
+          example: !include exchange_modules/8de16b26-5483-4bf7-b744-d0f4b84853c1/errors/1.0.2/Examples/Unv-Single.raml
+      responses:
+        200:
+          body:
+            application/json:
+              example: "Data was updated"
+    delete:
+      responses:
+        200:
+          body:
+            application/json:
+              example: "Data was deleted"

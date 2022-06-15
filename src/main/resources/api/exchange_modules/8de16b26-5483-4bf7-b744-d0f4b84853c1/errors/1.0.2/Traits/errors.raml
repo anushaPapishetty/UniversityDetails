@@ -1,0 +1,56 @@
+#%RAML 1.0 Trait
+
+headers:
+  NIT_university:
+    type: string
+    
+responses:
+  400:
+    body:
+      application/json:
+        example: "Bad Request"
+  401:
+    body:
+      application/json:
+        example: "Unauthorized"
+  403:
+    body:
+      application/json:
+        example: "Forbidden"
+  404:
+    body:
+      application/json:
+        example: "Not Found"
+  405:
+    body:
+      application/json:
+        example: "Method Not allowed"
+  415:
+    body:
+      application/json:
+        example: "Unsupported media type"
+  429:
+    body:
+      application/json:
+        example: "Many requests"
+  500:
+    body:
+      application/json:
+        example: "Internal server error"
+  502:
+    body:
+      application/json:
+        example: "Bad Gateway"
+  503:
+    body:
+      application/json:
+        example: "Gateway timeout"
+          
+          
+          
+                   
+          
+          
+          
+          
+          
