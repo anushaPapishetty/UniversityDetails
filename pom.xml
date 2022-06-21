@@ -42,8 +42,8 @@
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
 						<muleVersion>4.4.0</muleVersion>
-						<username>AnushaAmmu</username>
-						<password>Booking.com@1</password>
+						<username>Anusha3</username>
+						<password>Anypoint3</password>
 						<applicationName>University3997</applicationName>
 						<environment>Sandbox</environment>
 						<workers>1</workers>
